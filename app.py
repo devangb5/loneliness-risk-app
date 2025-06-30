@@ -37,10 +37,27 @@ def load_excel_sheets():
 @st.cache_data
 def load_tracts():
     url = "https://www2.census.gov/geo/tiger/TIGER2022/TRACT/tl_2022_21_tract.zip"
-    gdf_tracts = gpd.read_file(url)
-    gdf_tracts = gdf_tracts[gdf_tracts['COUNTYFP'] == '111']
-    gdf_tracts["tractid_short"] = gdf_tracts["GEOID"]
-    return gdf_tracts.to_crs(epsg=4326)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        zip_path = os.path.join(tmpdir, "tracts.zip")
+
+        # Download ZIP
+        with open(zip_path, "wb") as f:
+            f.write(requests.get(url).content)
+
+        # Unzip
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(tmpdir)
+
+        # Find the .shp file
+        shp_file = [f for f in os.listdir(tmpdir) if f.endswith(".shp")][0]
+        shp_path = os.path.join(tmpdir, shp_file)
+
+        # Read into GeoDataFrame
+        gdf_tracts = gpd.read_file(shp_path)
+        gdf_tracts = gdf_tracts[gdf_tracts['COUNTYFP'] == '111']
+        gdf_tracts["tractid_short"] = gdf_tracts["GEOID"]
+        return gdf_tracts.to_crs(epsg=4326)
 
 def calculate_weighted_risk_index(df, weights):
     df_clean = df.copy()
