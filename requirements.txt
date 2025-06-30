@@ -3,6 +3,6 @@ pandas
 geopandas
 folium
 branca
-openpyxl
 streamlit-folium
+openpyxl
 requests
