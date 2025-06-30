@@ -5,4 +5,3 @@ folium
 branca
 openpyxl
 streamlit-folium
-tempfile
