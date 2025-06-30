@@ -7,6 +7,7 @@ import branca.colormap as cm
 from streamlit_folium import st_folium
 import tempfile
 import os
+import requests
 
 EXCEL_FILE = "factors.xlsx"
 SHEETS_TO_USE = [
